@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>羽雪Chat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-top: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            margin-top: 5px;
+        }
+
+        .chat-container {
+            margin-top: 30px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #f1f1f1;
+        }
+
+        .message-user {
+            background-color: #2575fc;
+            color: white;
+            align-self: flex-end;
+        }
+
+        .message-system {
+            background-color: #6a11cb;
+            color: white;
+            align-self: flex-start;
+        }
+
+        .send-btn {
+            background-color: #2575fc;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .send-btn:hover {
+            background-color: #6a11cb;
+        }
+
+        .image-upload {
+            margin-top: 10px;
+        }
+
+        .image-upload input {
+            width: 100%;
+        }
+
+        .image-preview {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="header">
+            <h1>羽雪 Chat</h1>
+            <img src="icon.png" alt="icon" width="40">
+        </div>
+        <div class="form-group">
+            <label for="name">用户名：</label>
+            <input type="text" id="name" placeholder="输入用户名">
+        </div>
+        <div class="form-group">
+            <label for="password">密码：</label>
+            <input type="password" id="password" placeholder="输入密码">
+        </div>
+        <button class="send-btn" id="loginBtn">登录</button>
+        
+        <div class="chat-container" id="chatContainer" style="display: none;">
+            <div id="chatMessages"></div>
+            <div class="form-group">
+                <textarea id="messageInput" placeholder="输入消息..." rows="3" style="width: 100%;"></textarea>
+            </div>
+            <button class="send-btn" id="sendBtn">发送</button>
+            <div class="image-upload">
+                <input type="file" id="imageUpload" accept="image/*">
+            </div>
+            <div class="image-preview" id="imagePreview"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginBtn').addEventListener('click', function() {
+            const name = document.getElementById('name').value;
+            const password = document.getElementById('password').value;
+            if (name && password) {
+                document.getElementById('loginBtn').style.display = 'none';
+                document.getElementById('chatContainer').style.display = 'block';
+                addMessage('系统', '登录成功，欢迎 ' + name, 'system');
+            } else {
+                alert('请输入用户名和密码');
+            }
+        });
+
+        document.getElementById('sendBtn').addEventListener('click', function() {
+            const messageInput = document.getElementById('messageInput').value;
+            if (messageInput) {
+                addMessage('用户', messageInput, 'user');
+                document.getElementById('messageInput').value = '';
+            }
+        });
+
+        function addMessage(sender, message, type) {
+            const messageContainer = document.createElement('div');
+            messageContainer.classList.add('message');
+            if (type === 'user') {
+                messageContainer.classList.add('message-user');
+            } else {
+                messageContainer.classList.add('message-system');
+            }
+            messageContainer.textContent = sender + ": " + message;
+            document.getElementById('chatMessages').appendChild(messageContainer);
+            document.getElementById('chatContainer').scrollTop = document.getElementById('chatContainer').scrollHeight;
+        }
+
+        document.getElementById('imageUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function() {
+                    const img = document.createElement('img');
+                    img.src = reader.result;
+                    img.style.maxWidth = '200px';
+                    document.getElementById('imagePreview').innerHTML = '';
+                    document.getElementById('imagePreview').appendChild(img);
+                    addMessage('用户', '[图片已上传]', 'user');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>
